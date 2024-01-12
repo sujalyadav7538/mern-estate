@@ -1,10 +1,13 @@
 /* eslint-disable no-unused-vars */
-import { set } from "mongoose";
 import React from "react";
 import { useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function CreateListing() {
-  const [formData, setFormData] = useState({
+  const {currentUser}=useSelector((state)=> state.user);
+  const [loading,setLoading]=useState(false);
+  const [error,setError]=useState(null);
+  const [formdata, setFormData] = useState({
     imageUrls: [],
     name: "",
     description: "",
@@ -12,17 +15,18 @@ export default function CreateListing() {
     type: "rent",
     bedrooms: 1,
     bathrooms: 1,
-    regularprice: 50,
+    regularPrice: 50,
     discountPrice: 0,
     offer: false,
     parking: false,
     furnished: false,
+    userRef:''
   });
 
   const handleChange = (e) => {
     if (e.target.id === "sale" || e.target.id === "rent") {
       setFormData({
-        ...formData,
+        ...formdata,
         type: e.target.id,
       });
     }
@@ -32,8 +36,16 @@ export default function CreateListing() {
       e.target.id === "furnished" ||
       e.target.id === "offer"
     ) {
+      if(formdata.offer){
+        setFormData({
+          ...formdata,
+          'discountPrice':0,
+          [e.target.id]:e.target.checked
+        })
+        return
+      }
       setFormData({
-        ...formData,
+        ...formdata,
         [e.target.id]: e.target.checked,
       });
     }
@@ -44,49 +56,71 @@ export default function CreateListing() {
       e.target.type === "textarea"
     ) {
       setFormData({
-        ...formData,
+        ...formdata,
         [e.target.id]: e.target.value,
       });
     }
   };
 
   const handleFile = (e) => {
-    // console.log(e.target.files)
-
-    for (let i = 0; i < e.target.files.length; i++) {
+    if (formdata.imageUrls.length < 6) {
+      setError(null);
       setFormData((prev) => {
-        const updatedImageurls = [...prev.imageUrls, e.target.files[i]];
+        const updatedImageUrls = [...prev.imageUrls, ...e.target.files];
         return {
           ...prev,
-          imageUrls: updatedImageurls,
+          imageUrls: updatedImageUrls.slice(0, 6), // Limit to 6 files
         };
       });
+    }else{
+      setError('Images must be less than 6!!');
     }
-    // setFormData({
-    //     ...formData,
-    //     {for key in e.target.files}
-    //     imageUrls.append()
-    // })
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
     try {
-      // console.log(formData);
-      const formdata=new FormData();
-      for(const key in formData){
-        formdata[key]=formData[key];
+
+      if(formdata.discountPrice>formdata.regularPrice){
+        setLoading(false);
+        setError('Discount must be less than RegularPrice!!');
+        return
       }
-      console.log(formData,formdata)
-      const res= await fetch('/api/listing/create',{
-        method:'POST',
-        body:formdata,
+
+      const formData = new FormData();
+      formdata.userRef=currentUser._id;
+      for (const key in formdata) {
+        if (key!=='imageUrls'){
+          formData.append(key,formdata[key])
+        }
+        else{
+          for (const _ in formdata[key]){
+            formData.append(key,formdata[key][_])
+          }
+        }
+      }  
+      
+      const res = await fetch('/api/listing/create', {
+        method: 'POST',
+        body: formData,
       });
-      console.log(res);
+      const data = await res.json();
+      if(data.success==false){
+        setLoading(false);
+        setError(data.message);
+      }
+      setLoading(false);
+      setError(null);
     } catch (error) {
-      console.log("ERROR",error.message);
+      console.log("ERROR", error.message);
+      setLoading(false);
+      setError(error.message);
     }
   };
+  
   // console.log(formData);
 
   return (
@@ -109,7 +143,7 @@ export default function CreateListing() {
             id="name"
             maxLength="62"
             minLength="10"
-            defaultValue={formData.name}
+            defaultValue={formdata.name}
             required
           />
           <textarea
@@ -118,7 +152,7 @@ export default function CreateListing() {
             onChange={handleChange}
             placeholder="Description"
             className="border p-3 rounded-lg"
-            defaultValue={formData.description}
+            defaultValue={formdata.description}
             required
           />
           <input
@@ -127,7 +161,7 @@ export default function CreateListing() {
             onChange={handleChange}
             className="border p-3 rounded-lg"
             id="address"
-            defaultValue={formData.address}
+            defaultValue={formdata.address}
             required
           />
           <div className="flex gap-6 flex-wrap">
@@ -137,7 +171,7 @@ export default function CreateListing() {
                 id="sale"
                 onChange={handleChange}
                 className="w-5"
-                checked={formData.type === "sale"}
+                checked={formdata.type === "sale"}
               />
               <span>Sell</span>
             </div>
@@ -147,7 +181,7 @@ export default function CreateListing() {
                 id="rent"
                 onChange={handleChange}
                 className="w-5"
-                checked={formData.type === "rent"}
+                checked={formdata.type === "rent"}
               />
               <span>Rent</span>
             </div>
@@ -157,7 +191,7 @@ export default function CreateListing() {
                 id="parking"
                 onChange={handleChange}
                 className="w-5"
-                checked={formData.parking}
+                checked={formdata.parking}
               />
               <span>Parking</span>
             </div>
@@ -167,7 +201,7 @@ export default function CreateListing() {
                 id="furnished"
                 onChange={handleChange}
                 className="w-5"
-                checked={formData.furnished}
+                checked={formdata.furnished}
               />
               <span>Furnished</span>
             </div>
@@ -177,7 +211,7 @@ export default function CreateListing() {
                 id="offer"
                 onChange={handleChange}
                 className="w-5"
-                checked={formData.offer}
+                checked={formdata.offer}
               />
               <span>Offer</span>
             </div>
@@ -192,7 +226,7 @@ export default function CreateListing() {
                 required
                 className="p-3 border border-gray-300 rounded-lg"
                 id="bedrooms"
-                defaultValue={formData.bedrooms}
+                defaultValue={formdata.bedrooms}
               />
               <p>Beds</p>
             </div>
@@ -205,7 +239,7 @@ export default function CreateListing() {
                 required
                 className="p-3 border border-gray-300 rounded-lg"
                 id="bathrooms"
-                defaultValue={formData.bathrooms}
+                defaultValue={formdata.bathrooms}
               />
               <p>Baths</p>
             </div>
@@ -217,29 +251,29 @@ export default function CreateListing() {
                 onChange={handleChange}
                 required
                 className="p-3 border border-gray-300 rounded-lg"
-                id="regularprice"
-                defaultValue={formData.regularprice}
+                id="regularPrice"
+                defaultValue={formdata.regularPrice}
               />
               <div className="flex flex-col items-center">
                 <p>Regular Price</p>
-                {formData.type === "rent" && <span>($/Month)</span>}
+                {formdata.type === "rent" && <span>($/Month)</span>}
               </div>
             </div>
-            {formData.offer && (
+            {formdata.offer && (
               <div className="flex items-center gap-2 ">
                 <input
                   type="number"
-                  id="discountprice"
+                  id="discountPrice"
                   min="0"
                   onChange={handleChange}
                   max="1000000"
                   required
                   className="p-3 border rounded-lg border-gray-300"
-                  defaultValue={formData.discountPrice}
+                  defaultValue={formdata.discountPrice}
                 />
                 <div className="flex flex-col items-center">
                   <p> Offer</p>
-                  {formData.type === "rent" && <span>($/Month)</span>}
+                  {formdata.type === "rent" && <span>($/Month)</span>}
                 </div>
               </div>
             )}
@@ -257,9 +291,11 @@ export default function CreateListing() {
               type="file"
               id="images"
               multiple
+              required
               className="p-3 border-gray-300 rounded w-full"
               accept="images/*"
               onChange={handleFile}
+              name="imageUrls"
             />
             <button
               type="button"
@@ -269,10 +305,12 @@ export default function CreateListing() {
             </button>
           </div>
           <button
+             disabled={loading}
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
           >
-            Create Listing
+             {loading?"Creating...":"Create Listing"}
           </button>
+          {error && <p>{error}</p>}
         </div>
       </form>
     </main>

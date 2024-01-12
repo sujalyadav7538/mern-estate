@@ -5,7 +5,7 @@ import authRoute from './routes/auth.route.js';
 import listingRoute from './routes/listing.route.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-
+import bodyParser from 'body-parser';
 
 dotenv.config({path:'./.env'});
 const app=express();
@@ -18,6 +18,8 @@ mongoose.connect(process.env.MONGO)
 
 app.use(express.json());
 app.use(cookieParser()); 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api/user',userRoute);
 app.use('/api/auth',authRoute);

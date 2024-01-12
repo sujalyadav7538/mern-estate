@@ -12,6 +12,7 @@ export const updateUser= async (req,res,next)=>{
     if (req.user.id!==req.params.id) return next(errorHandler(401,'Not Allowed'));
 
     try {
+        console.log(req.body,req.files)
         if(req.body.password){
             req.body.password= bcryptjs.hashSync(req.body.password,10);
         }
