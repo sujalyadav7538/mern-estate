@@ -32,6 +32,7 @@ export default function Profile() {
     e.preventDefault();
     try {
         dispatch(updateUserStart());
+        setedit(true);
         const formData = new FormData();
         for (const key in formdata) {
           console.log(key)
@@ -54,6 +55,7 @@ export default function Profile() {
         }
 
         dispatch(updateUserSuccess(data));
+        setedit(false);
         navigate('/profile');
     } catch (error) {
         dispatch(updateUserFailure(error.message));
@@ -112,19 +114,16 @@ export default function Profile() {
   }
   // console.log(formdata);
 
-  useEffect(() => {
-    setedit(false);
-  },[loading]);
   
   return (
     <div className='p-3 max-w-xl mx-auto'>
       <h1 className='text-3xl font-semibold text-center'>Profile</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4" encType="multipart/form-data">
         <input disabled={!edit} type="file" onChange={handleFile} ref={fileref} hidden accept='images/*' name='avatar' />
-        <img src={file  || currentUser.avatar} onClick={()=> fileref.current.click()} alt="PROFILE IMAGE" className='self-center h-24 w-24 rounded-full cursor-pointer mt-2 object-cover'/>
+        <img src={currentUser.avatar} onClick={()=> fileref.current.click()} alt="PROFILE IMAGE" className='self-center h-24 w-24 rounded-full cursor-pointer mt-2 object-cover'/>
         <input type="text"  onChange={handleChange} defaultValue={currentUser.username} id='username' disabled={!edit} className='p-3 rounded-lg border'   />
         <input type="email" onChange={handleChange} defaultValue={currentUser.email} id='email' disabled={!edit} className='p-3 rounded-lg border' />
-        <input type="password" placeholder='password' id='password' disabled={!edit} className='p-3 rounded-lg border' />
+        {edit?<input type="password" placeholder='password' id='password' disabled={!edit} className='p-3 rounded-lg border' />:<div></div>}
         {edit?
             <><button disabled={loading} className='bg-slate-700 p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-90'>{loading ? 'Loading..' : 'Update'}
             </button><button className='bg-red-700 p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-90' onClick={handleEdit}>CANCEL</button></>
