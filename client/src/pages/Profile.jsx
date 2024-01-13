@@ -139,6 +139,9 @@ export default function Profile() {
         <span onClick={handleDeleteUser} className='text-red-700 font-semibold cursor-pointer'>Delete Account</span>
         <span  onClick={handleSignOut} className='text-red-700 font-semibold cursor-pointer '>Sign Out</span>
       </div>
+      <div>
+        
+      </div>
     </div>
   )
 }
