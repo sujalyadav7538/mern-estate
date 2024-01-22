@@ -8,6 +8,7 @@ export const verifyToken=(req,_,next)=>{
    jwt.verify(token,process.env.JWT_SECRET,(err,user)=>{
     if (err) return next(errorHandler(403,'Forbidden'));
     req.user=user;
+   //  console.log(req.user)
     next();
    })
 };

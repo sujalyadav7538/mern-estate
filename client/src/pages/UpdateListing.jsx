@@ -1,16 +1,16 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 
 export default function CreateListing() {
   const {currentUser}=useSelector((state)=> state.user);
   const [loading,setLoading]=useState(false);
+  const params=useParams();
   const [error,setError]=useState(null);
-  const [uploadLoading,setuploadLoding]=useState(false);
-  const [currentFile,setcurrentFile]=useState([])
   const navigate=useNavigate();
+  const [currentFile,setcurrentFile]=useState([]);
   const [formdata, setFormData] = useState({
     imageUrls: [],
     name: "",
@@ -26,7 +26,22 @@ export default function CreateListing() {
     furnished: false,
     userRef:''
   });
+//   console.log(params.id);
 
+  
+  useEffect(()=>{
+     const currentListing=async()=>{
+      const res=await fetch(`/api/listing/getlisting/${params.id}`);
+      const data= await res.json();
+      // console.log(data);
+      setFormData(data)
+     }
+     currentListing();
+    // console.log("in effect",formdata);
+  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    , [])
+  
   const handleChange = (e) => {
     if (e.target.id === "sale" || e.target.id === "rent") {
       setFormData({
@@ -78,32 +93,8 @@ export default function CreateListing() {
       setError('Images must be less than 6!!');
     }
   };
-  // console.log(currentFile);
   
-  
-  const uploadFile=async (e)=>{
-    // console.log(formdata.imageUrls);
-    // e.preventDefault();
-    setuploadLoding(true)
-    const formData=new FormData();
-    for(const key in currentFile){
-      formData.append('imageUrls',currentFile[key])
-    }
-    const res = await fetch('/api/listing/imageurl/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    const data= await res.json();
-    console.log("Response",data);
-    setFormData((prev) => ({
-      ...prev,
-      imageUrls:data
-    }));
-    setuploadLoding(false);
-    console.log(formdata.imageUrls)
 
-    
-  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -121,7 +112,7 @@ export default function CreateListing() {
       }))
       console.log(formdata.userRef)
 
-      const res = await fetch('/api/listing/create',{
+      const res = await fetch(`/api/listing/update/${params.id}`,{
           method:'POST',
           headers:{
             "Content-Type":'application/json'
@@ -144,12 +135,13 @@ export default function CreateListing() {
     }
   };
   
+  // console.log(formData);
 
   return (
     <main className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">
-        {" "}
-        CreateListing{" "}
+        {}
+        UpdateListing{" "}
       </h1>
       <form
         className="flex flex-col sm:flex-row gap-4"
@@ -301,7 +293,7 @@ export default function CreateListing() {
             )}
           </div>
         </div>
-        <div className="flex flex-col flex-1 ga[-4">
+        <div className="flex flex-col flex-1 gap-4">
           <p className="font-semibold">
             Images:
             <span className="font-normal text-gray-600 ml-2">
@@ -313,7 +305,6 @@ export default function CreateListing() {
               type="file"
               id="images"
               multiple
-              required
               className="p-3 border-gray-300 rounded w-full"
               accept="images/*"
               onChange={handleFile}
@@ -322,25 +313,24 @@ export default function CreateListing() {
             <button
               type="button"
               className="p-3 text-green-700 border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80"
-              onClick={uploadFile}
             >
-              {uploadLoading?'UpLoading..':'Upload'}
+              Upload
             </button>
           </div>
-           <div className="flex flex-col gap-2 p-3">
-           {formdata.imageUrls.map((imageUrl, index) => (
-              <div key={index} className="flex justify-between p-3 border rounded-md items-center">
+          
+            {formdata.imageUrls.map((imageUrl, index) => (
+              <div key={index} className="flex justify-between p-3 border items-center">
                 <img key={index} src={imageUrl} alt="" className="w-30 object-contain rounded-lg h-20"/>
                 <button className="font-semibold text-blue-700 uppercase hover:font-bold hover:text-red-700 p-3 rounded-lg " >DELETE</button>
               </div>
 
             ))}
-           </div>
+
           <button
              disabled={loading}
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
           >
-             {loading?"Creating...":"Create Listing"}
+             {loading?"Updating...":"Update Listing"}
           </button>
           {error && <p>{error}</p>}
         </div>
