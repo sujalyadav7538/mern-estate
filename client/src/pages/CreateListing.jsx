@@ -84,23 +84,29 @@ export default function CreateListing() {
   const uploadFile=async (e)=>{
     // console.log(formdata.imageUrls);
     // e.preventDefault();
-    setuploadLoding(true)
-    const formData=new FormData();
-    for(const key in currentFile){
-      formData.append('imageUrls',currentFile[key])
+    try {
+      if (currentFile.length<=0) return setError("NO IMAGE IS SELECTED!!") 
+      setuploadLoding(true)
+      const formData=new FormData();
+      for(const key in currentFile){
+        formData.append('imageUrls',currentFile[key])
+      }
+      const res = await fetch('/api/listing/imageurl/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data= await res.json();
+      console.log("Response",data);
+      setFormData((prev) => ({
+        ...prev,
+        imageUrls:data
+      }));
+      console.log(formdata.imageUrls)
+    } catch (error) {
+      setError(error.message);
+    } finally{      
+      setuploadLoding(false);
     }
-    const res = await fetch('/api/listing/imageurl/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    const data= await res.json();
-    console.log("Response",data);
-    setFormData((prev) => ({
-      ...prev,
-      imageUrls:data
-    }));
-    setuploadLoding(false);
-    console.log(formdata.imageUrls)
 
     
   }
@@ -115,6 +121,8 @@ export default function CreateListing() {
         setError('Discount must be less than RegularPrice!!');
         return
       }
+      if(formdata.imageUrls<=0) return setError("No Image Uploaded, Upload atleast 1 image!!")
+
       setFormData((prev)=>({
         ...prev,
         userRef:currentUser._id
@@ -141,22 +149,29 @@ export default function CreateListing() {
       console.log("ERROR", error.message);
       setLoading(false);
       setError(error.message);
+    } finally{
+      setLoading(false)
     }
   };
+   const deleteFile=(index)=>{
+    setcurrentFile(
+      currentFile.filter((_, i) => i !== index)
+    )
+   }
   
 
   return (
-    <main className="p-3 max-w-4xl mx-auto">
+    <main className="p-3 mt-8 max-w-5xl mx-auto border-solid border-2 border-gray-700 rounded-lg shadow-2xl shadow-black-500">
       <h1 className="text-3xl font-semibold text-center my-7">
         {" "}
         CreateListing{" "}
       </h1>
       <form
-        className="flex flex-col sm:flex-row gap-4"
+        className="flex flex-col sm:flex-row gap-6 "
         onSubmit={handleSubmit}
         encType="multipart/form-data"
       >
-        <div className="flex flex-col gap-4 flex-1">
+        <div className="flex flex-col gap-5 flex-1">
           <input
             type="text"
             placeholder="Name"
@@ -301,7 +316,7 @@ export default function CreateListing() {
             )}
           </div>
         </div>
-        <div className="flex flex-col flex-1 ga[-4">
+        <div className="flex flex-col flex-1 gap-3">
           <p className="font-semibold">
             Images:
             <span className="font-normal text-gray-600 ml-2">
@@ -314,31 +329,31 @@ export default function CreateListing() {
               id="images"
               multiple
               required
-              className="p-3 border-gray-300 rounded w-full"
+              className="p-3 border-e-green-900 rounded w-full border"
               accept="images/*"
               onChange={handleFile}
               name="imageUrls"
             />
             <button
               type="button"
-              className="p-3 text-green-700 border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80"
+              className="p-3 text-green-700  border  border-s-green-400 rounded uppercase hover:shadow-lg disabled:opacity-80"
               onClick={uploadFile}
             >
               {uploadLoading?'UpLoading..':'Upload'}
             </button>
           </div>
            <div className="flex flex-col gap-2 p-3">
-           {formdata.imageUrls.map((imageUrl, index) => (
-              <div key={index} className="flex justify-between p-3 border rounded-md items-center">
-                <img key={index} src={imageUrl} alt="" className="w-30 object-contain rounded-lg h-20"/>
-                <button className="font-semibold text-blue-700 uppercase hover:font-bold hover:text-red-700 p-3 rounded-lg " >DELETE</button>
+           {currentFile && currentFile.map((obj, index) => (
+              <div key={index} className="flex justify-between p-3 border rounded-md items-center border-slate-300">
+                <img key={index} src={URL.createObjectURL(obj)} alt="" className="w-30 object-contain rounded-lg h-20"/>
+                <button type='button' className="font-semibold text-blue-700 uppercase hover:font-bold hover:text-red-700 p-3 rounded-lg " onClick={()=> deleteFile(index)}>DELETE</button>
               </div>
 
             ))}
            </div>
           <button
-             disabled={loading}
-            className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+             disabled={loading ||uploadLoading}
+            className="p-3 bg-blue-700 shadow  shadow-blue-950 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80 hover:shadow-lg"
           >
              {loading?"Creating...":"Create Listing"}
           </button>
