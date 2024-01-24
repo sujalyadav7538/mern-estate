@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import {useNavigate, useParams} from 'react-router-dom';
+import { BiArrowToLeft } from "react-icons/bi";
 
 export default function CreateListing() {
   const {currentUser}=useSelector((state)=> state.user);
@@ -12,7 +13,10 @@ export default function CreateListing() {
   const [uploadLoading,setuploadLoding]=useState(false);
   const navigate=useNavigate();
   const [currentFile,setcurrentFile]=useState([]);
-  const[initialLoad,setinitialLoad]=useState(false);
+  const [updated,setupdated]=useState(false);
+
+  console.log(updated)
+
   const [formdata, setFormData] = useState({
     // imageUrls: [],
     // name: "",
@@ -37,14 +41,15 @@ export default function CreateListing() {
       const data= await res.json();
       // console.log(data);
       setFormData(data)
-      setinitialLoad(true)
      }
      currentListing();
   }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     , [params.id])
+ 
   
   const handleChange = (e) => {
+    setupdated(true);
     if (e.target.id === "sale" || e.target.id === "rent") {
       setFormData({
         ...formdata,
@@ -85,6 +90,7 @@ export default function CreateListing() {
 
   const handleFile = (e) => {
     // console.log(e.target.files);
+    setupdated(true);
     if (currentFile.length < 6) {
       setError(null);
       setcurrentFile((prev) => [
@@ -113,6 +119,7 @@ export default function CreateListing() {
       ...prev,
       imageUrls:[...prev.imageUrls,data]
     }));
+    setupdated(true);
     
     // console.log(formdata.imageUrls)
   } catch(error){
@@ -123,37 +130,36 @@ export default function CreateListing() {
     
   };
 
-  const deleteCurrentFile=(index)=>{
-    setcurrentFile(
-      currentFile.filter((_, i) => i !== index)
-    )
-  }
+  // const deleteCurrentFile=(index)=>{
+  //   setcurrentFile(
+  //     currentFile.filter((_, i) => i !== index)
+  //   )
+  // }
 
   const  deleteSavedFile=(index)=>{
     setFormData({
       ...formdata,
       imageUrls: formdata.imageUrls.filter((_, i) => i !== index),
     });
+    setupdated(true);
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
     try {
-      console.log(formdata.discountPrice,formdata.regularPrice)
+      if(!updated) return setError("NOT UPDATED!!")
       if(formdata.discountPrice>formdata.regularPrice){
-        setLoading(false);
         setError('Discount must be less than RegularPrice!!');
         return
       }
       if(formdata.imageUrls<=0) return setError("No Image Uploaded, Upload atleast 1 image!!")
-      setFormData((prev)=>({
+          setFormData((prev)=>({
         ...prev,
         userRef:currentUser._id
       }))
       console.log(formdata.userRef)
-
+      setLoading(true);
       const res = await fetch(`/api/listing/update/${params.id}`,{
           method:'POST',
           headers:{
@@ -176,13 +182,18 @@ export default function CreateListing() {
       setError(error.message);
     }
   };
+
+  
   
   // console.log(formdata);
 
   return (
     <main className="p-4 pb-6 m-8 max-w-5xl mx-auto border-solid border-2 border-gray-700 rounded-lg shadow-2xl shadow-black-500">
+      <logo>
+        <BiArrowToLeft className="h-5 w-5 hover:scale-110" onClick={()=>{window.history.back()}}/>
+      </logo>
       <h1 className="text-3xl font-semibold text-center my-7">
-        {}
+        
         UpdateListing{" "}
       </h1>
       <form

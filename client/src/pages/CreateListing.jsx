@@ -3,6 +3,7 @@ import React from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { BiArrowToLeft } from "react-icons/bi";
 
 export default function CreateListing() {
   const {currentUser}=useSelector((state)=> state.user);
@@ -161,7 +162,10 @@ export default function CreateListing() {
   
 
   return (
-    <main className="p-3 mt-8 max-w-5xl mx-auto border-solid border-2 border-gray-700 rounded-lg shadow-2xl shadow-black-500">
+    <main className="p-5 mt-8 max-w-5xl mx-auto border-solid border-2 border-gray-700 rounded-lg shadow-2xl shadow-black-500 ">
+      <logo>
+        <BiArrowToLeft className="h-5 w-5 hover:scale-110" onClick={()=>{window.history.back()}}/>
+      </logo>
       <h1 className="text-3xl font-semibold text-center my-7">
         {" "}
         CreateListing{" "}

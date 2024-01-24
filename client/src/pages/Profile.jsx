@@ -1,97 +1,121 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { updateUserFailure ,updateUserSuccess,updateUserStart,deleteUserFailure,deleteUserStart,deleteUserSuccess,signOutUserFailure,signOutUserStart,signOutUserSuccess } from '../redux/user/userSlice.js';
-import {  Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  updateUserFailure,
+  updateUserSuccess,
+  updateUserStart,
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  signOutUserFailure,
+  signOutUserStart,
+  signOutUserSuccess,
+} from "../redux/user/userSlice.js";
+import { showlisting,hidelisting } from "../redux/listing/listingslice.js";
+import { Link, useNavigate } from "react-router-dom";
+import { RxCross1 } from "react-icons/rx";
+
 
 
 export default function Profile() {
-  const {currentUser,loading,error}=useSelector((state)=> state.user);
-  const [formdata,setformData]=useState({});
-  const fileref=useRef(null);
-  const [file,setFile]=useState(undefined);
-  const [edit,setedit]=useState(false);
-  const [userListing,setUserListing]=useState([])
-  const navigate=useNavigate();
-
+  const { currentUser, loading, _ } = useSelector((state) => state.user);
+  const [formdata, setformData] = useState({});
+  const fileref = useRef(null);
+  const [file, setFile] = useState(undefined);
+  const [edit, setedit] = useState(false);
+  const [userListing, setUserListing] = useState([]);
+  const navigate = useNavigate();
+  const {showListing}=useSelector((state)=> state.listing);
   const dispatch = useDispatch();
 
-  const handleChange=(e)=>{
-     setformData({
+  // console.log(userListing);
+
+  useEffect(()=>{
+    const handleListings = async () => {
+        try {
+          const res = await fetch(`/api/user/listings/${currentUser._id}`);
+          const data = await res.json();
+          setUserListing(data);
+        } catch (error) {
+          return;
+        }
+      
+    };
+    handleListings();
+  },[])
+
+  const handleChange = (e) => {
+    setformData({
       ...formdata,
-      [e.target.id]:e.target.value,
-     });
+      [e.target.id]: e.target.value,
+    });
 
     //  console.log(formdata);
   };
 
-  const handleEdit=(e)=>{
-    setedit((prev)=> !prev)
+  const handleEdit = (e) => {
+    setedit((prev) => !prev);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        dispatch(updateUserStart());
-        setedit(true);
-        const formData = new FormData();
-        for (const key in formdata) {
-          console.log(key)
-          formData.append(key, formdata[key]);
-        }
+      if(Object.keys(formdata).length==0) return 
+      dispatch(updateUserStart());
+      setedit(true);
+      const formData = new FormData();
+      for (const key in formdata) {
+        console.log(key);
+        formData.append(key, formdata[key]);
+      }
 
-        console.log(formData);
-       
+      console.log(formData);
 
-        const res = await fetch(`/api/user/update/${currentUser._id}`, {
-            method: 'POST',
-            body: formData,
-        });
-        const data = await res.json();
-        console.log(res,data);
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      console.log(res, data);
 
-        if (data.success === false) {
-            dispatch(updateUserFailure(data.message));
-            return;
-        }
+      if (data.success === false) {
+        dispatch(updateUserFailure(data.message));
+        return;
+      }
 
-        dispatch(updateUserSuccess(data));
-        setedit(false);
-        navigate('/profile');
+      dispatch(updateUserSuccess(data));
+     
+      navigate("/profile");
     } catch (error) {
-        dispatch(updateUserFailure(error.message));
+      dispatch(updateUserFailure(error.message));
+    } finally{
+      setedit(false);
     }
-};
+  };
 
-
-  const handleFile=(e)=>{
-    console.log(e.target.files[0])
-    const selectedfile=e.target.files[0];
+  const handleFile = (e) => {
+    console.log(e.target.files[0]);
+    const selectedfile = e.target.files[0];
     setFile(selectedfile);
     setformData({
       ...formdata,
-      avatar:selectedfile,
-
+      avatar: selectedfile,
     });
   };
 
-  const handleListings=async(e)=>{
-    try {
-      const res = await fetch(`/api/user/listings/${currentUser._id}`);
-      const data=await res.json();
-      setUserListing(data);
-
-    } catch (error) {
-      return
-    }
-  }
-
+  const handleListings = async (e) => {
+    if (!showListing) {        
+        dispatch(showlisting());
+    } else return dispatch(hidelisting());
+  };
 
   const handleDeleteUser = async () => {
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       const data = await res.json();
       if (data.success === false) {
@@ -104,100 +128,203 @@ export default function Profile() {
     }
   };
 
-  const handleDeleteListing = async(id)=>{
+  const handleDeleteListing = async (id) => {
     try {
-      const res=await fetch(`/api/listing/delete/${id}`,{method:'DELETE'});
-      const data=res.json();
-      if(data.success==false){
-        return
+      const res = await fetch(`/api/listing/delete/${id}`, {
+        method: "DELETE",
+      });
+      const data = res.json();
+      if (data.success == false) {
+        return;
       }
-      setUserListing((prev)=> prev.filter((listing)=> listing._id!== id));
+      setUserListing((prev) => prev.filter((listing) => listing._id !== id));
     } catch (error) {
-      return
+      return;
     }
-  }
+  };
 
-  const handleSignOut = async (e)=>{
-    try{
-       dispatch(signOutUserStart());
-       const res = fetch('/api/auth/signout',{
-        method:'GET',
-       });
+  const handleSignOut = async (e) => {
+    try {
+      dispatch(signOutUserStart());
+      const res = fetch("/api/auth/signout", {
+        method: "GET",
+      });
 
-       const data = (await res).json();
-       if (data.success==false){
+      const data = (await res).json();
+      if (data.success == false) {
         dispatch(signOutUserFailure(data.message));
         return;
-       }
+      }
 
-       dispatch(signOutUserSuccess(data));
-
-
-    } catch(err){
+      dispatch(signOutUserSuccess(data));
+    } catch (err) {
       dispatch(signOutUserFailure(err.message));
     }
-  }
-  // console.log(formdata);
+  };
+  console.log(formdata);
 
-  
   return (
-    <div className='p-3 max-w-xl mx-auto'>
-      <h1 className='text-3xl font-semibold text-center'>Profile</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4" encType="multipart/form-data">
-        <input disabled={!edit} type="file" onChange={handleFile} ref={fileref} hidden accept='images/*' name='avatar' />
-        <img src={currentUser.avatar} onClick={()=> fileref.current.click()} alt="PROFILE IMAGE" className='self-center h-24 w-24 rounded-full cursor-pointer mt-2 object-cover'/>
-        <input type="text"  onChange={handleChange} defaultValue={currentUser.username} id='username' disabled={!edit} className='p-3 rounded-lg border'   />
-        <input type="email" onChange={handleChange} defaultValue={currentUser.email} id='email' disabled={!edit} className='p-3 rounded-lg border' />
-        {edit?<input type="password" placeholder='password' id='password' disabled={!edit} className='p-3 rounded-lg border' />:<div></div>}
-        {edit?
-            <><button disabled={loading} className='bg-slate-700 p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-90'>{loading ? 'Loading..' : 'Update'}
-            </button><button className='bg-red-700 p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-90' onClick={handleEdit}>CANCEL</button></>
-            :
-            <button type='button'  className='bg-red-500 p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-90' onClick={handleEdit} >EDIT</button>
+    <main className=" max-w-7xl flex mx-auto mt-8 p- gap-2">
+      <div className="p-3 max-w-md mx-auto flex flex-col border border-white border-e-gray-400 rounded-xl shadow-lg shadow-gray-400 flex-1 justify-center">
+        <h1 className="text-3xl font-semibold text-center">Profile</h1>
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4"
+          encType="multipart/form-data"
+        >
+          <input
+            disabled={!edit}
+            type="file"
+            onChange={handleFile}
+            ref={fileref}
+            hidden
+            accept="images/*"
+            name="avatar"
+          />
+          <img
+            src={currentUser.avatar}
+            onClick={() => fileref.current.click()}
+            alt="PROFILE IMAGE"
+            className="self-center h-24 w-24 rounded-full cursor-pointer mt-2 object-cover"
+          />
+          <input
+            type="text"
+            onChange={handleChange}
+            defaultValue={currentUser.username}
+            id="username"
+            disabled={!edit}
+            className="p-3 rounded-lg border"
+          />
+          <input
+            type="email"
+            onChange={handleChange}
+            defaultValue={currentUser.email}
+            id="email"
+            disabled={!edit}
+            className="p-3 rounded-lg border"
+          />
+          {edit ? (
+            <input
+              type="password"
+              placeholder="password"
+              id="password"
+              disabled={!edit}
+              className="p-3 rounded-lg border"
+            />
+          ) : (
+            <div></div>
+          )}
+          {edit ? (
+            <>
+              <button
+                disabled={loading}
+                className="bg-slate-700 p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-90"
+              >
+                {loading ? "Loading.." : "Update"}
+              </button>
+              <button
+                className="bg-red-700 p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-90"
+                onClick={handleEdit}
+              >
+                CANCEL
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="bg-red-500 p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-90"
+              onClick={handleEdit}
+            >
+              EDIT
+            </button>
+          )}
+          {!edit ? (
+            <Link
+              className="p-3 bg-green-700 text-white rounded-lg text-center font-medium uppercase"
+              to={"/create-listing"}
+            >
+              Create Listing
+            </Link>
+          ) : (
+            ""
+          )}
+        </form>
+        {!edit&&(
+         <>
+        <div className="flex justify-between my-4 ">
+          <span
+            onClick={handleDeleteUser}
+            className="m-2 p-2 text-slate-700 cursor-pointer shoadow shadow-md uppercase font-medium hover:scale-95 rounded-lg  hover:bg-white hover:text-red-9 00 hover:opacity-95 border hover:shadow-green-800"
+          >
+            Delete Account
+          </span>
+          <span
+            onClick={handleSignOut}
+            className=" m-2 p-2 cursor-pointer text-slate-800 shoadow  shadow-md uppercase font-medium hover:scale-95 rounded-lg hover:bg-white  border hover:shadow-green-800 "
+          >
+            Sign Out
+          </span>
+        </div>
+        <div className="flex text-center justify-center">
+          <button
+            type="button"
+            className="font-semibold text-green-700 hover:underline uppercase"
+            onClick={handleListings}
+          >
+            {!showListing &&"Show Listing"}
+          </button>
+        </div>
+        </>)
+        }
+      </div>
           
-        }
-        {!edit?
-        <Link className='p-3 bg-green-700 text-white rounded-lg text-center font-medium uppercase' to={'/create-listing'}>Create Listing</Link>:""
-        }
-      </form>
-      <div className="flex justify-between my-4">
-        <span onClick={handleDeleteUser} className='text-red-700 font-semibold cursor-pointer'>Delete Account</span>
-        <span  onClick={handleSignOut} className='text-red-700 font-semibold cursor-pointer '>Sign Out</span>
-      </div>
-      <div className='flex text-center justify-center'>
-        <button type='button' className='font-semibold text-green-700 hover:underline uppercase' onClick={handleListings}>Show Listings</button>
-      </div>
-      <div>
-        {userListing && userListing.length>0 && (
-          <div className="flex flex-col gap-4">
-            <h1 className='text-center mt-7 text-2xl font-semibold'>
-              YOUR LISTINGS
-            </h1>
-            {userListing.map((listing)=>(
-              <div key={listing._id} className="border rounded-lg p-3 flex justify-between items-center gap-4">
-                   <Link to={`/listing/${listing._id}`}>
-                    <img src={listing.imageUrls[0]} alt="listing cover" className='h-16 w-16 object-contain' />
-                   </Link>
-                   <Link to={`/listing/${listing._id}`} className='text-slate-700 font-semibold hover:underline truncate flex-1'>
+      {showListing &&!edit&& (
+        <div className="p-2 mx-w-2xl mx-auto flex flex-col flex-1  border border-white border-s-gray-400 rounded-xl shadow-lg shadow-gray-400 ">
+          {showListing&&<logo>
+          <RxCross1 className="hover:scale-105" onClick={()=>{dispatch(hidelisting())}} />
+          </logo>}
+          {userListing && userListing.length > 0 && (
+            <div className="flex flex-col gap-4 ">
+              <h1 className="text-center mt-7 text-2xl font-semibold">
+                YOUR LISTINGS
+              </h1>
+              {userListing.map((listing) => (
+                <div
+                  key={listing._id}
+                  className="border rounded-lg p-3 flex justify-between items-center gap-4"
+                >
+                  <Link to={`/listing/${listing._id}`}>
+                    <img
+                      src={listing.imageUrls[0]}
+                      alt="listing cover"
+                      className="h-18 rounded-lg border shadow-gray-500 shadow-md w-24  mx-4 hover:scale-105"
+                    />
+                  </Link>
+                  <Link
+                    to={`/listing/${listing._id}`}
+                    className="tracking-wide font-semibold hover:scale-105 text-gray-700 truncate flex-1"
+                  >
                     <p>{listing.name}</p>
-                   </Link>
-                   <div className="flex flex-col items-center">
-                    <button className='text-red-700 uppercase' onClick={()=>handleDeleteListing(listing._id)}>delete</button>
-                    <Link to={`/update-listing/${listing._id}`}>
-                    <button className='text-green-700 uppercase'>edit</button>
-
-                    </Link>
-                   </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-
-      <div>
-        
-      </div>
-    </div>
-  )
+                  </Link>
+                    <div className="flex flex-row gap-2 flex-wrap">
+                      <button
+                        className="bg-red-600 m-2 p-2 shoadow text-white shadow-md uppercase font-medium rounded-lg hover:opacity-95 hover:scale-95 border hover:shadow-orange-500"
+                        onClick={() => handleDeleteListing(listing._id)}
+                      >
+                        delete
+                      </button>
+                      <Link to={`/update-listing/${listing._id}`}>
+                        <button className="bg-green-600 m-2 p-2 px-5  shoadow text-white shadow-md uppercase font-medium hover:scale-105 rounded-lg hover:opacity-95 border hover:shadow-green-800">
+                          edit
+                        </button>
+                      </Link>
+                    </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </main>
+  );
 }
