@@ -148,7 +148,7 @@ export default function CreateListing() {
     e.preventDefault();
     setError(null);
     try {
-      if(!updated) return setError("NOT UPDATED!!")
+      if(!updated) return navigate(`/listing/${params.id}`);
       if(formdata.discountPrice>formdata.regularPrice){
         setError('Discount must be less than RegularPrice!!');
         return
