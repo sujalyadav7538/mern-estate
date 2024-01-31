@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
@@ -164,8 +165,8 @@ export default function Profile() {
   console.log(formdata);
 
   return (
-    <main className=" max-w-7xl flex mx-auto mt-8 p- gap-2">
-      <div className="p-3 max-w-md mx-auto flex flex-col border border-white border-e-gray-400 rounded-xl shadow-lg shadow-gray-400 flex-1 justify-center">
+    <main className=" max-w-7xl flex flex-col lg:flex-row mx-auto mt-8 p-3 gap-2">
+      {(<div className="p-3 max-w-md mx-auto flex flex-col border border-white border-e-gray-400 rounded-xl shadow-lg shadow-gray-400 flex-1 justify-center">
         <h1 className="text-3xl font-semibold text-center">Profile</h1>
         <form
           onSubmit={handleSubmit}
@@ -251,16 +252,16 @@ export default function Profile() {
         </form>
         {!edit&&(
          <>
-        <div className="flex justify-between my-4 ">
+        <div className="flex justify-between my-4  ">
           <span
             onClick={handleDeleteUser}
-            className="m-2 p-2 text-slate-700 cursor-pointer shoadow shadow-md uppercase font-medium hover:scale-95 rounded-lg  hover:bg-white hover:text-red-9 00 hover:opacity-95 border hover:shadow-green-800"
+            className="m-2 p-2 text-slate-700 cursor-pointer text-center shoadow shadow-md uppercase font-medium hover:scale-95 rounded-lg  hover:bg-white hover:text-red-9 00 hover:opacity-95 border hover:shadow-green-800"
           >
             Delete Account
           </span>
           <span
             onClick={handleSignOut}
-            className=" m-2 p-2 cursor-pointer text-slate-800 shoadow  shadow-md uppercase font-medium hover:scale-95 rounded-lg hover:bg-white  border hover:shadow-green-800 "
+            className=" m-2 p-2 cursor-pointer text-slate-800 shoadow text-center shadow-md uppercase font-medium hover:scale-95 rounded-lg hover:bg-white  border hover:shadow-green-800 "
           >
             Sign Out
           </span>
@@ -277,27 +278,29 @@ export default function Profile() {
         </>)
         }
       </div>
+      )}
           
       {showListing &&!edit&& (
-        <div className="p-2 mx-w-2xl mx-auto flex flex-col flex-1  border border-white border-s-gray-400 rounded-xl shadow-lg shadow-gray-400 ">
+        <div className="p-2 mx-w-2xl card  mx-auto flex flex-col border border-white border-s-gray-400 rounded-xl shadow-md   shadow-gray-400 ">
           {showListing&&<logo>
-          <RxCross1 className="hover:scale-105" onClick={()=>{dispatch(hidelisting())}} />
+          <RxCross1 className="hover:scale-105 m-3" onClick={()=>{dispatch(hidelisting())}} />
           </logo>}
           {userListing && userListing.length > 0 && (
             <div className="flex flex-col gap-4 ">
-              <h1 className="text-center mt-7 text-2xl font-semibold">
-                YOUR LISTINGS
+              <h1 className="m-2 text-2xl font-semibold text-slate-700">
+                Listings: 
               </h1>
+            <div className="flex gap-4 justify-evenly p-2 m-2 flex-wrap">
               {userListing.map((listing) => (
-                <div
+                  <div
                   key={listing._id}
-                  className="border rounded-lg p-3 flex justify-between items-center gap-4"
+                  className="border rounded-lg shadow-lg shadow-slate-600 hover:scale-105 p-3 flex  flex-col justify-between items-center gap-2"
                 >
                   <Link to={`/listing/${listing._id}`}>
                     <img
                       src={listing.imageUrls[0]}
                       alt="listing cover"
-                      className="h-18 rounded-lg border shadow-gray-500 shadow-md w-24  mx-4 hover:scale-105"
+                      className=" rounded-lg border shadow-gray-500 shadow-md h-20 w-50 mx-4 hover:scale-105"
                     />
                   </Link>
                   <Link
@@ -308,19 +311,20 @@ export default function Profile() {
                   </Link>
                     <div className="flex flex-row gap-2 flex-wrap">
                       <button
-                        className="bg-red-600 m-2 p-2 shoadow text-white shadow-md uppercase font-medium rounded-lg hover:opacity-95 hover:scale-95 border hover:shadow-orange-500"
+                        className="bg-red-600 m-2 p-2 shoadow text-white shadow-md uppercase font-medium rounded-lg hover:opacity-95 hover:scale-95 border hover:shadow-red-500"
                         onClick={() => handleDeleteListing(listing._id)}
                       >
                         delete
                       </button>
                       <Link to={`/update-listing/${listing._id}`}>
-                        <button className="bg-green-600 m-2 p-2 px-5  shoadow text-white shadow-md uppercase font-medium hover:scale-105 rounded-lg hover:opacity-95 border hover:shadow-green-800">
+                        <button className="bg-green-600 m-2 p-2 px-5  shoadow text-white hover:border-white shadow-md uppercase font-medium hover:scale-105 rounded-lg hover:opacity-95 border hover:shadow-green-800">
                           edit
                         </button>
                       </Link>
                     </div>
                 </div>
               ))}
+            </div>
             </div>
           )}
         </div>

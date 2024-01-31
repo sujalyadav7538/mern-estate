@@ -71,3 +71,17 @@ export const userListing = async(req,res,next)=>{
         next(errorHandler(402,"Can't Show!!!"))
     }
 }
+
+
+
+export const getUser= async(req,res,next)=>{
+    try{
+        
+        const data=await  User.findById(req.params.id);
+        if(!data) return next(errorHandler(404,'No Owner is Found'));
+        res.status(200).json(data);
+    } catch(error){
+        next(error);
+    }
+   
+}

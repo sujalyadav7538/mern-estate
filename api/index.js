@@ -43,7 +43,7 @@ app.post(
     try {
       const { avatar, imageUrls } = req.files;
       const localfilepaths = [];
-      // console.log(avatar,imageUrls)
+      // console.log(req.files)
       if (avatar) {
         for (let i = 0; i < avatar.length; i++) {
           // localfilepaths.push(avatar[i].path)
