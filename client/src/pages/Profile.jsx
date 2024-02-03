@@ -14,9 +14,10 @@ import {
   signOutUserStart,
   signOutUserSuccess,
 } from "../redux/user/userSlice.js";
-import { showlisting,hidelisting } from "../redux/listing/listingslice.js";
 import { Link, useNavigate } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
+import ListingModal from "../components/ListingModal.jsx";
+import Footer from "../components/footer.jsx";
 
 
 
@@ -28,10 +29,10 @@ export default function Profile() {
   const [edit, setedit] = useState(false);
   const [userListing, setUserListing] = useState([]);
   const navigate = useNavigate();
-  const {showListing}=useSelector((state)=> state.listing);
+  const [showListing,setShowListing]=useState(false);
   const dispatch = useDispatch();
 
-  // console.log(userListing);
+  console.log(showListing);
 
   useEffect(()=>{
     const handleListings = async () => {
@@ -106,11 +107,7 @@ export default function Profile() {
     });
   };
 
-  const handleListings = async (e) => {
-    if (!showListing) {        
-        dispatch(showlisting());
-    } else return dispatch(hidelisting());
-  };
+ 
 
   const handleDeleteUser = async () => {
     try {
@@ -129,20 +126,6 @@ export default function Profile() {
     }
   };
 
-  const handleDeleteListing = async (id) => {
-    try {
-      const res = await fetch(`/api/listing/delete/${id}`, {
-        method: "DELETE",
-      });
-      const data = res.json();
-      if (data.success == false) {
-        return;
-      }
-      setUserListing((prev) => prev.filter((listing) => listing._id !== id));
-    } catch (error) {
-      return;
-    }
-  };
 
   const handleSignOut = async (e) => {
     try {
@@ -163,9 +146,10 @@ export default function Profile() {
     }
   };
   console.log(formdata);
-
+  
   return (
-    <main className=" max-w-7xl flex flex-col lg:flex-row mx-auto mt-8 p-3 gap-2">
+    <>
+    <main className=" max-w-7xl flex flex-col lg:flex-row mx-auto mt-4 p-3 gap-2">
       {(<div className="p-3 max-w-md mx-auto flex flex-col border border-white border-e-gray-400 rounded-xl shadow-lg shadow-gray-400 flex-1 justify-center">
         <h1 className="text-3xl font-semibold text-center">Profile</h1>
         <form
@@ -252,10 +236,10 @@ export default function Profile() {
         </form>
         {!edit&&(
          <>
-        <div className="flex justify-between my-4  ">
+        <div className="flex justify-between my-4  flex-wrap">
           <span
             onClick={handleDeleteUser}
-            className="m-2 p-2 text-slate-700 cursor-pointer text-center shoadow shadow-md uppercase font-medium hover:scale-95 rounded-lg  hover:bg-white hover:text-red-9 00 hover:opacity-95 border hover:shadow-green-800"
+            className="m-2 p-2 text-slate-700 cursor-pointer  text-center shoadow shadow-md uppercase font-medium hover:scale-95 rounded-lg  hover:bg-white hover:text-red-9 00 hover:opacity-95 border hover:shadow-green-800"
           >
             Delete Account
           </span>
@@ -270,65 +254,20 @@ export default function Profile() {
           <button
             type="button"
             className="font-semibold text-green-700 hover:underline uppercase"
-            onClick={handleListings}
+            onClick={()=>setShowListing(prev=>!prev)}
           >
-            {!showListing &&"Show Listing"}
+            {!showListing&&"Show Listing"}
           </button>
         </div>
         </>)
         }
       </div>
       )}
-          
-      {showListing &&!edit&& (
-        <div className="p-2 mx-w-2xl card  mx-auto flex flex-col border border-white border-s-gray-400 rounded-xl shadow-md   shadow-gray-400 ">
-          {showListing&&<logo>
-          <RxCross1 className="hover:scale-105 m-3" onClick={()=>{dispatch(hidelisting())}} />
-          </logo>}
-          {userListing && userListing.length > 0 && (
-            <div className="flex flex-col gap-4 ">
-              <h1 className="m-2 text-2xl font-semibold text-slate-700">
-                Listings: 
-              </h1>
-            <div className="flex gap-4 justify-evenly p-2 m-2 flex-wrap">
-              {userListing.map((listing) => (
-                  <div
-                  key={listing._id}
-                  className="border rounded-lg shadow-lg shadow-slate-600 hover:scale-105 p-3 flex  flex-col justify-between items-center gap-2"
-                >
-                  <Link to={`/listing/${listing._id}`}>
-                    <img
-                      src={listing.imageUrls[0]}
-                      alt="listing cover"
-                      className=" rounded-lg border shadow-gray-500 shadow-md h-20 w-50 mx-4 hover:scale-105"
-                    />
-                  </Link>
-                  <Link
-                    to={`/listing/${listing._id}`}
-                    className="tracking-wide font-semibold hover:scale-105 text-gray-700 truncate flex-1"
-                  >
-                    <p>{listing.name}</p>
-                  </Link>
-                    <div className="flex flex-row gap-2 flex-wrap">
-                      <button
-                        className="bg-red-600 m-2 p-2 shoadow text-white shadow-md uppercase font-medium rounded-lg hover:opacity-95 hover:scale-95 border hover:shadow-red-500"
-                        onClick={() => handleDeleteListing(listing._id)}
-                      >
-                        delete
-                      </button>
-                      <Link to={`/update-listing/${listing._id}`}>
-                        <button className="bg-green-600 m-2 p-2 px-5  shoadow text-white hover:border-white shadow-md uppercase font-medium hover:scale-105 rounded-lg hover:opacity-95 border hover:shadow-green-800">
-                          edit
-                        </button>
-                      </Link>
-                    </div>
-                </div>
-              ))}
-            </div>
-            </div>
-          )}
-        </div>
-      )}
+      
+      {showListing&&(<ListingModal listings={userListing} onClose={()=>setShowListing(false)}/>)}
+      
     </main>
+    <Footer/>
+    </>
   );
 }

@@ -13,17 +13,17 @@ export default function Map({lat,lon}) {
     iconSize:[38,38]
   }) 
   const center = [51.505, -0.09]
-
+  console.log(lat?[parseInt(lon), parseInt(lat)]:center)
   return (
     <div>
-      <MapContainer center={[parseInt(lon), parseInt(lat)]} zoom={13}   className='h-72 max-w-lg' >
+      <MapContainer center={lat?[parseInt(lon), parseInt(lat)]:center} zoom={10}   className='h-60 z-0 ' >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Marker position={[parseInt(lon), parseInt(lat)]} icon={customIcon}>
+        <Marker position={lat?[parseInt(lon), parseInt(lat)]:[center]} icon={customIcon}>
           <Popup>
-            A pretty CSS3 popup. <br /> Easily customizable.
+            {[lat,lon]}
           </Popup>
         </Marker>
       </MapContainer>

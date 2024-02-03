@@ -1,30 +1,19 @@
 import Listing from "../models/listing.model.js";
 import { uploadOnCloud } from "../utils/cloudinary.js";
 import { errorHandler } from "../utils/error.js";
+import { geoCode } from "../utils/geocode.js";
 
 export const createListing = async (req, res, next) => {
   try {
-    console.log(req.body.userRef, req.user);
+    // console.log(req.body.userRef, req.user);
     if (req.body.userRef !== req.user.id)
       return next(errorHandler(402, "Unauthorised Request To the server"));
     if (req.body.imageUrls.length > 6)
       return next(errorHandler(401, "Images Should Not be more than 6"));
-    const requestOptions = {
-      method: "GET",
-    };
-    const response = await fetch(
-      `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
-        req.body.address
-      )}&apiKey=${process.env.GEO_API_KEY}`,
-      requestOptions
-    );
-    const data = await response.json();
-
-    const coordinates = data.features[0].geometry.coordinates;
-    req.body.latitude = coordinates[0];
-    req.body.longitude = coordinates[1];
-    console.log(req.body.latitude,req.body.longitude);
-
+    const coordinates= await geoCode(req.body.address);
+    
+    req.body.latitude=coordinates[0];
+    req.body.longitude=coordinates[1];
     const listing = await Listing.create(req.body);
     res.status(200).json(listing);
   } catch (error) {
@@ -51,6 +40,12 @@ export const UpdateListing = async (req, res, next) => {
   if (req.user.id !== listing.userRef)
     return next(errorHandler(404, "Unauthorised Access!!"));
   try {
+    if(listing.address!==req.body.address){
+      const changedGeocode=await geoCode(req.body.address);
+      req.body.latitude=changedGeocode[0];
+      req.body.longitude=changedGeocode[1];
+    }
+    
     const updatedListing = await Listing.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -66,7 +61,7 @@ export const getListing = async (req, res, next) => {
   try {
     const listing = await Listing.findById(req.params.id);
     if (!listing) return next(errorHandler(402, "Listing do not exist"));
-    // console.log(listing)
+    console.log(listing)
     res.status(200).json(listing);
   } catch (error) {
     next(error);
@@ -75,6 +70,7 @@ export const getListing = async (req, res, next) => {
 
 export const getListings = async (req, res, next) => {
   try {
+    console.log("here")
     const limit = parseInt(req.query.limit) || 9;
     const startIndex = parseInt(req.query.startIndex) || 0;
     let offer = req.query.offer;

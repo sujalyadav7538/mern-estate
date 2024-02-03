@@ -3,10 +3,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import "swiper/css/bundle";
-import SwiperCore from "swiper";
 import {
   FaBath,
   FaBed,
@@ -19,7 +15,7 @@ import {
 import { IoIosImages } from "react-icons/io";
 import { GiCrossedBones } from "react-icons/gi";
 import Contact from "../components/Contact.jsx";
-import Modal from './../components/modal';
+import ImageModal from './../components/ImageModal.jsx';
 import Map from "../components/map.jsx";
 
 export default function Listing() {
@@ -28,20 +24,18 @@ export default function Listing() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const[showImages,setShowImages]=useState(false);
-  SwiperCore.use([Navigation]);
   const [copied, setCopied] = useState(false);
   const [contact, setContact] = useState(false);
   const params = useParams();
   const { currentUser } = useSelector((state) => state.user);
   const [map,setMap]=useState(false);
-  const[geocodes,setGeocodes]=useState([])
   useEffect(() => {
     const fetchListing = async () => {
       try {
         setLoading(true);
         const res = await fetch(`/api/listing/getlisting/${params.id}`);
         const data = await res.json();
-        // console.log(data)
+        console.log(data)
         if (data.success === false) {
           setError(true);
           setLoading(false);
@@ -66,14 +60,14 @@ export default function Listing() {
     <main className="max-w-full max-h-full m-6 p-3">
       {loading && <p className="text-center my-7 text-2xl">Loading...</p>}
       {error && (
-        <p className="text-center my-7 text-2xl">Something went wrong!</p>
+        <p className="text-center my-7 text-2xl">{error}</p>
       )}
 
       {listing && !loading && !error && listing.imageUrls && (
         <div className=" flex flex-col lg:flex-row gap-2 ">
           <div className="h-[500px] w-[700px] ">
           <img src={listing.imageUrls[0]} alt="" className="w-full h-full object-cover rounded-xl"  />
-          {showImages&&(<Modal urls={listing.imageUrls}/>)}
+          {showImages&&(<ImageModal urls={listing.imageUrls}/>)}
           </div>
             {!showImages?(
               <div>
@@ -117,7 +111,7 @@ export default function Listing() {
               <FaMapMarkerAlt className="text-green-700 cursor-pointer"  />
               {listing.address}
             </p>
-            {map&&<Map lat={listing.latitude} lon={listing.longitude} className="z-0"/>}
+            {!showImages&&map&&<Map lat={listing.latitude} lon={listing.longitude} className="z-0"/>}
             <div className="flex gap-4">
               <p className="bg-red-900 w-full max-w-[200px] text-white text-center p-1 rounded-md">
                 {listing.type === "rent" ? "For Rent" : "For Sale"}
