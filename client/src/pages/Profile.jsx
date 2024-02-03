@@ -32,7 +32,6 @@ export default function Profile() {
   const [showListing,setShowListing]=useState(false);
   const dispatch = useDispatch();
 
-  console.log(showListing);
 
   useEffect(()=>{
     const handleListings = async () => {
@@ -145,7 +144,6 @@ export default function Profile() {
       dispatch(signOutUserFailure(err.message));
     }
   };
-  console.log(formdata);
   
   return (
     <>

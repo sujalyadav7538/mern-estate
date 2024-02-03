@@ -13,7 +13,6 @@ export default function Map({lat,lon}) {
     iconSize:[38,38]
   }) 
   const center = [51.505, -0.09]
-  console.log(lat?[parseInt(lon), parseInt(lat)]:center)
   return (
     <div>
       <MapContainer center={lat?[parseInt(lon), parseInt(lat)]:center} zoom={10}   className='h-60 z-0 ' >

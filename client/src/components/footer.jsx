@@ -13,7 +13,7 @@ export default function Footer() {
       const contentHeight = document.documentElement.scrollHeight;
       const viewportHeight = window.innerHeight;
       const scrollPosition = window.scrollY;
-      console.log(viewportHeight, scrollPosition, contentHeight);
+      // console.log(viewportHeight, scrollPosition, contentHeight);
 
       setIsFixed(
         contentHeight <= viewportHeight &&

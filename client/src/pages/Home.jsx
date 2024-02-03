@@ -49,7 +49,6 @@ export default function Home() {
     }
   offerListings();
   },[])
-  console.log(offer,sale,rent)
   return (
     <>
     <main className="">
