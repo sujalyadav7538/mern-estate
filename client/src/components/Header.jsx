@@ -25,17 +25,17 @@ export default function Header() {
     }
   }, [window.location.search]);
   return (
-    <header className="bg-slate-200 shadow-md">
-      <div className="flex justify-between items-center max-w-6xl mx-auto p-3">
+    <header className="bg-slate-400 shadow-inner  shadow-gray-950">
+      <div className="flex justify-around items-center max-w-7xlxxl mx-auto p-3">
         <Link to="/">
           <h1 className="font-bold text-sm sm:text-xl flex flex-wrap">
-            <span className="text-slate-500">Sahand</span>
-            <span className="text-slate-700">Estate</span>
+            <span className="text-gray-200">Sahand</span>
+            <span className="text-sky-950">Estate</span>
           </h1>
         </Link>
         <form
           onSubmit={handleSubmit}
-          className="bg-slate-100 p-3 rounded-lg flex items-center"
+          className="bg-slate-100 p-3 rounded-lg flex items-center hover:scale-105 transition-scale duration-300"
         >
           <input
             type="text"
@@ -48,14 +48,14 @@ export default function Header() {
             <FaSearch className="text-slate-600" />
           </button>
         </form>
-        <ul className="flex gap-4">
+        <ul className="flex gap-6 items-center">
           <Link to="/">
-            <li className="hidden sm:inline text-slate-700 hover:underline">
+            <li className="hidden sm:inline font-medium text-cyan-950 text-base hover:underline ">
               Home
             </li>
           </Link>
           <Link to="/about">
-            <li className="hidden sm:inline text-slate-700 hover:underline">
+          <li className="hidden sm:inline font-medium text-cyan-950 text-base hover:underline ">
               About
             </li>
           </Link>
@@ -63,7 +63,7 @@ export default function Header() {
           <Link to={"/profile"}>
             {currentUser ? (
               <img
-                className="rounded-full h-7 w-7 object-cover"
+                className="rounded-full h-8 w-8 object-cover "
                 src={currentUser.avatar}
                 alt="profile"
               />

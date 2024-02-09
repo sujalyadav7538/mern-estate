@@ -1,10 +1,13 @@
 /* eslint-disable react/prop-types */
 import { Link } from 'react-router-dom';
 import { MdLocationOn } from 'react-icons/md';
+import { GiBed } from "react-icons/gi";
+import { FaBath } from "react-icons/fa6";
+
 
 export default function ListingItem({ listing }) {
   return (
-    <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]'>
+    <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px] '>
       <Link to={`/listing/${listing._id}`}>
         <img
           src={
@@ -34,15 +37,17 @@ export default function ListingItem({ listing }) {
             {listing.type === 'rent' && ' / month'}
           </p>
           <div className='text-slate-700 flex gap-4'>
-            <div className='font-bold text-xs'>
-              {listing.bedrooms > 1
-                ? `${listing.bedrooms} beds `
-                : `${listing.bedrooms} bed `}
+            <div className='font-bold text-xs  flex flex-row items-center justify-center gap-1'>
+              {listing.bedrooms}
+              <GiBed className='text-base'/>
+
+                
             </div>
-            <div className='font-bold text-xs'>
-              {listing.bathrooms > 1
-                ? `${listing.bathrooms} baths `
-                : `${listing.bathrooms} bath `}
+            <div className='font-bold text-xs flex flex-row items-center justify-center gap-1'>
+              {listing.bathrooms}
+
+            <FaBath className='text-base'/>
+
             </div>
           </div>
         </div>

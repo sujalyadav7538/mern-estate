@@ -8,10 +8,7 @@ const router = express.Router();
 
 router.get('/get/:id',verifyToken,getUser);
 
-router.post('/update/:id',upload.fields([{
-    name:'avatar',
-    maxCount:1
-}]),verifyToken,updateUser);
+router.post('/update/:id',verifyToken,updateUser);
 router.delete('/delete/:id',verifyToken,deleteUser);
 
 router.get('/listings/:id',verifyToken,userListing);

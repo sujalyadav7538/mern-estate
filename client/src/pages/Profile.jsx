@@ -1,3 +1,4 @@
+/* eslint-disable no-unreachable */
 /* eslint-disable react/jsx-key */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
@@ -17,29 +18,37 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
 import ListingModal from "../components/ListingModal.jsx";
-import Footer from "../components/footer.jsx";
 
 
 
 export default function Profile() {
+  
   const { currentUser, loading, _ } = useSelector((state) => state.user);
   const [formdata, setformData] = useState({});
   const fileref = useRef(null);
-  const [file, setFile] = useState(undefined);
+  const [file, setFile] = useState(null);
   const [edit, setedit] = useState(false);
   const [userListing, setUserListing] = useState([]);
   const navigate = useNavigate();
   const [showListing,setShowListing]=useState(false);
   const dispatch = useDispatch();
+  const [error,setError]=useState(null);
 
+  useEffect(()=>{
+    // setUser(currentUser);
+    setformData({})
+    setError(null)
+  },[edit]);
 
   useEffect(()=>{
     const handleListings = async () => {
         try {
+          setError(null)
           const res = await fetch(`/api/user/listings/${currentUser._id}`);
           const data = await res.json();
           setUserListing(data);
         } catch (error) {
+          setError(error.message)
           return;
         }
       
@@ -48,10 +57,10 @@ export default function Profile() {
   },[])
 
   const handleChange = (e) => {
-    setformData({
+    setformData((formdata)=>({
       ...formdata,
       [e.target.id]: e.target.value,
-    });
+    }));
 
     //  console.log(formdata);
   };
@@ -60,56 +69,74 @@ export default function Profile() {
     setedit((prev) => !prev);
   };
 
+
+  const uploadAvatar=async(avatar)=>{
+    try {
+      setError(null)
+      const uplodedUrl=new FormData();
+      uplodedUrl.append('avatar',avatar);
+      const res = await fetch('/api/user/avatar/upload',{
+        method:'POST',
+        body:uplodedUrl,
+      })
+      const data = await res.json();
+      console.log(data)
+      return data[0];
+    } catch (error) {
+      dispatch(updateUserFailure(error.message));
+      setError("Issue in Uploading Image , Plz try again !!");
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
-      if(Object.keys(formdata).length==0) return 
       dispatch(updateUserStart());
+      setError(null)
+      
+      if(Object.keys(formdata).length==0 && !file) return dispatch(updateUserSuccess(currentUser));
       setedit(true);
-      const formData = new FormData();
-      for (const key in formdata) {
-        console.log(key);
-        formData.append(key, formdata[key]);
+      if (file){
+        const filePath=await uploadAvatar(file);
+        formdata.avatar=filePath;
       }
-
-      console.log(formData);
-
+      
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
         method: "POST",
-        body: formData,
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify(formdata),
       });
       const data = await res.json();
-      console.log(res, data);
-
       if (data.success === false) {
         dispatch(updateUserFailure(data.message));
+        setError(data.message)
         return;
       }
-
-      dispatch(updateUserSuccess(data));
-     
+      dispatch(updateUserSuccess(data));      
+      
       navigate("/profile");
     } catch (error) {
       dispatch(updateUserFailure(error.message));
+      setError(error.message)
     } finally{
       setedit(false);
     }
   };
 
   const handleFile = (e) => {
-    console.log(e.target.files[0]);
+    // console.log(e.target.files[0]);
     const selectedfile = e.target.files[0];
     setFile(selectedfile);
-    setformData({
-      ...formdata,
-      avatar: selectedfile,
-    });
-  };
+    };
 
  
 
   const handleDeleteUser = async () => {
     try {
+      setError(null)
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
@@ -117,11 +144,13 @@ export default function Profile() {
       const data = await res.json();
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
+        setError(data.message)
         return;
       }
       dispatch(deleteUserSuccess(data));
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
+      setError("Cannot Delete User!!")
     }
   };
 
@@ -129,6 +158,7 @@ export default function Profile() {
   const handleSignOut = async (e) => {
     try {
       dispatch(signOutUserStart());
+      setError(null)
       const res = fetch("/api/auth/signout", {
         method: "GET",
       });
@@ -136,19 +166,23 @@ export default function Profile() {
       const data = (await res).json();
       if (data.success == false) {
         dispatch(signOutUserFailure(data.message));
+        setError(data.message)
         return;
       }
 
       dispatch(signOutUserSuccess(data));
     } catch (err) {
       dispatch(signOutUserFailure(err.message));
+      setError(err.message)
     }
   };
-  
+
+  // console.log(error,formdata)
   return (
     <>
     <main className=" max-w-7xl flex flex-col lg:flex-row mx-auto mt-4 p-3 gap-2">
-      {(<div className="p-3 max-w-md mx-auto flex flex-col border border-white border-e-gray-400 rounded-xl shadow-lg shadow-gray-400 flex-1 justify-center">
+      {(<div 
+          className={`p-3 max-w-md mx-auto flex flex-col border border-white border-e-gray-400 rounded-xl shadow-lg shadow-gray-400 flex-1 justify-center `}>
         <h1 className="text-3xl font-semibold text-center">Profile</h1>
         <form
           onSubmit={handleSubmit}
@@ -173,7 +207,7 @@ export default function Profile() {
           <input
             type="text"
             onChange={handleChange}
-            defaultValue={currentUser.username}
+            value={edit?formdata.username:currentUser.username}
             id="username"
             disabled={!edit}
             className="p-3 rounded-lg border"
@@ -181,7 +215,7 @@ export default function Profile() {
           <input
             type="email"
             onChange={handleChange}
-            defaultValue={currentUser.email}
+            value={edit?formdata.email:currentUser.email}
             id="email"
             disabled={!edit}
             className="p-3 rounded-lg border"
@@ -208,6 +242,7 @@ export default function Profile() {
               <button
                 className="bg-red-700 p-3 rounded-lg text-white hover:opacity-95 disabled:opacity-90"
                 onClick={handleEdit}
+                disabled={loading}
               >
                 CANCEL
               </button>
@@ -261,11 +296,11 @@ export default function Profile() {
         }
       </div>
       )}
-      
-      {showListing&&(<ListingModal listings={userListing} onClose={()=>setShowListing(false)}/>)}
+     
+      {(<ListingModal listings={userListing} onClose={()=>setShowListing(false)} show={showListing} />)}
       
     </main>
-    <Footer/>
+    {error&& alert(`Failed to Update due to: ${error}`)}
     </>
   );
 }

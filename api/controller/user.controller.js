@@ -13,17 +13,11 @@ export const updateUser= async (req,res,next)=>{
     if (req.user.id!==req.params.id) return next(errorHandler(401,'Not Allowed'));
 
     try {
-        console.log(req.body,req.files)
+        console.log(req.body)
         if(req.body.password){
             req.body.password= bcryptjs.hashSync(req.body.password,10);
         }
-        let avatarLocalPath = null;
-        let avatar=null;
-
-        if (req.files && req.files.avatar && req.files.avatar[0]) {
-            avatarLocalPath = req.files.avatar[0].path;
-            avatar = await uploadOnCloud(avatarLocalPath);
-        }
+      
         const user = await User.findById(req.params.id);
         const updateuser=await User.findByIdAndUpdate(req.params.id,{
             $set:{
@@ -31,7 +25,7 @@ export const updateUser= async (req,res,next)=>{
                 username:req.body.username,
                 email:req.body.email,
                 password:req.body.password,
-                avatar: avatar ? avatar.url : user.avatar,
+                avatar: req.body.avatar,
 
             },
     },{new:true});
@@ -40,7 +34,7 @@ export const updateUser= async (req,res,next)=>{
     res.status(200).json(rest);
 
     } catch (error) { 
-        console.log(error);
+        // console.log(error);
         next(error);
     }
 };

@@ -1,19 +1,16 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/no-unescaped-entities */
-/* eslint-disable react/jsx-key */
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
-import ListingItem from "./../components/ListingItem";
 import { Link } from "react-router-dom";
-import { Swiper,SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-import SwiperCore  from 'swiper';
-import 'swiper/css/bundle'
-import Footer from './../components/footer';
+import Footer from "./../components/footer";
+import { useState, useEffect } from "react";
+import ListingItem from "../components/ListingItem";
+import image6 from '/image.jpg'
 
 
-export default function Home() {
+export default function About() {
+  const [load, setLoad] = useState(false);
   const [sale, setsale] = useState([]);
-  SwiperCore.use([Navigation]);
   const [offer, setoffer] = useState([]);
   const [rent, setrent] = useState([]);
 
@@ -49,50 +46,57 @@ export default function Home() {
     }
   offerListings();
   },[])
+
+  useEffect(() => {
+    setLoad(true);
+  }, []);
+  console.log(load)
+
   return (
-    <>
-    <main className="">
-      {/* TOp Section */}
-      <section className=" flex flex-col gap-6 p-28 px-3 max-w-6xl mx-auto">
-        
-          <h1 className="font-bold text-3xl lg:text-6xl text-slate-700">
-            Find your next{" "}
-            <span className="text-slate-500">
-              perfect <br />{" "}
-            </span>
-            place with ease
-          </h1>
-          <p className="text-gray-500 text-xs sm:text-sm">
-            Sahand Estate will help you find your home fast, easy and
-            comfortable. <br /> Our expert support are always available.
-          </p>
-          <Link to={`/search?`}>
-             <span className="text-blue-800 font-bold hover:underline text-xs lg:text-sm"> Let's Start now...</span>
-          </Link>
+    <main className="min-w-full min-h-full  bg-indigo-200 ">
+      <section className="h-[550px] md:h-[70vh] lg:h-[80vh]relative  p-2  ">
+        <div
+          className="w-full h-full object-cover relative rounded-full shadow-2xl shadow-purple-950/80 transition-transform "
+          style={{
+            backgroundImage:
+            `url(${image6})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          
+          <div
+            className={`${
+              load ? "translate-x-0" : "-translate-x-full"
+            } ease-in-out delay-500 duration-1000 absolute p-28 max-w-6xl mx-auto flex  transition-transform flex-col gap-4 cursor-pointer`}
+          >
+            <h1 className="font-bold text-3xl lg:text-6xl text-sky-200">
+              Find your next{" "}
+              <span className="text-gray-500">
+                perfect <br />{" "}
+              </span>
+              place with ease
+            </h1>
+            <p className="text-sky-200 text-xs sm:text-2xl font-semibold">
+              Rent / Sale & Buy
+            </p>
+            <span className="text-teal-500 font-bold  text-xs lg:text-lg">              
+            <Link to={`/search?`} className="max-w-xs">
+                Explore More...
+            </Link>
+              </span>
+          </div>
+        </div>
       </section>
-      {/* Image corousel section */}
-      <section>
-        <Swiper navigation loop>
-          {offer&&offer.length>0&&offer.map((listing)=>(
-            <SwiperSlide key={listing._id}>
-              <div
-              className="h-[550px] p-2 m-2 rounded-md shadow-md shadow-blue-300"
-              style={{
-                background:`url(${listing.imageUrls[0]}) center no-repeat`,
-                backgroundSize:'cover',
-              }}
-              ></div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </section>
-      {/* Listing offer section */}
-      <section className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10">
+
+      {/* Next Section */}
+      <section className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10 ">
         {offer&&offer.length>0&&(
           <div className="">
             <div className="pb-2">
-              <h2 className="text-2xl font-semibold text-slate-600">Recent Offers</h2>
-              <Link className="text-sm text-blue-800 hover:underline " to={'/search/?offer=true'}>Show more offers</Link>
+              <h2 className="text-3xl font-semibold text-violet-950">Recent offer on Properties</h2>
+              <Link className="text-sm text-teal-950 font-medium hover:underline " to={'/search/?type=rent'}>Show more offer</Link>
             </div>
             <div className="flex flex-wrap gap-4">
               {offer.map((listing)=>(
@@ -102,13 +106,12 @@ export default function Home() {
           </div>            
          )}
       </section>
-      {/* Rent Offer Section */}
       <section className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10">
         {rent&&rent.length>0&&(
           <div className="">
             <div className="pb-2">
-              <h2 className="text-2xl font-semibold text-slate-600">Recent places for Rent</h2>
-              <Link className="text-sm text-blue-800 hover:underline " to={'/search/?type=rent'}>Show more place for rent</Link>
+              <h2 className="text-3xl font-semibold text-violet-950 drop-shadow-2xl">Recent places for Rent</h2>
+              <Link className="text-sm text-teal-950 font-medium hover:underline" to={'/search/?type=rent'}>Show more place for rent</Link>
             </div>
             <div className="flex flex-wrap gap-4">
               {rent.map((listing)=>(
@@ -122,8 +125,8 @@ export default function Home() {
         {sale&&sale.length>0&&(
           <div className="">
             <div className="pb-2">
-              <h2 className="text-2xl font-semibold text-slate-600">Recent places for sale</h2>
-              <Link className="text-sm text-blue-800 hover:underline " to={'/search/?type=sale'}>Show more polaces for sale</Link>
+              <h2 className="text-3xl font-semibold text-violet-950">Recent places for sale</h2>
+              <Link className="text-sm text-teal-950 font-medium hover:underline " to={'/search/?type=sale'}>Show more places for sale</Link>
             </div>
             <div className="flex flex-wrap gap-4">
               {sale.map((listing)=>(
@@ -133,10 +136,7 @@ export default function Home() {
           </div>            
          )}
       </section>
-
-
-    </main>
       <Footer/>
-      </>
+    </main>
   );
 }
