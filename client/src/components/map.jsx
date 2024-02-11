@@ -4,7 +4,7 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
-import map from 'E:/mern-estate/public/map.png'
+import map from '/map.png'
 
 
 export default function Map({lat,lon}) {
