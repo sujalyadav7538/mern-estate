@@ -29,7 +29,7 @@ export default function Header() {
       <div className="flex justify-around items-center max-w-7xlxxl mx-auto p-3">
         <Link to="/">
           <h1 className="font-bold text-sm sm:text-xl flex flex-wrap">
-            <span className="text-gray-200">Sahand</span>
+            <span className="text-gray-200">MERN </span>
             <span className="text-sky-950">Estate</span>
           </h1>
         </Link>
