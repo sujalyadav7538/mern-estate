@@ -9,6 +9,7 @@ import bodyParser from "body-parser";
 import { upload } from "./middlewares/multer.middleware.js";
 import { verifyToken } from "./utils/verifyuser.js";
 import { uploadOnCloud } from "./utils/cloudinary.js";
+import path from "path";
 
 dotenv.config({ path: "./.env" });
 const app = express();
@@ -21,6 +22,8 @@ mongoose
     console.log(err);
   });
 
+const __dirname=path.resolve();
+  
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -62,32 +65,17 @@ app.post(
   }
 );
 
-// app.post('*/geocode',async(req,res,next)=>{
-//      try {
-//        const requestOptions={
-//         method:"GET"
-//        };
-       
-//        const {address}=req.body||'America';
-//        console.log(req.body)
-//         const response= await fetch(`https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address)}&apiKey=72bee9f218654ad6a595ec9dc8bf3b7b`, requestOptions)
-//         const data=await response.json();
-       
-//         const coordinates = data.features[0].geometry.coordinates;
-//         const lat=coordinates[0];
-//         const lon=coordinates[1];
-//         console.log(lat,lon)
-       
-//         res.status(200).send([lon,lat])
-      
-//      } catch (error) {
-//       next(error)
-//      }
-// })
+
 
 app.use("/api/user", userRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/listing", listingRoute);
+
+app.use(express.static(path.join(__dirname,'/client/dist')));
+
+app.get('*',(req,res)=>{
+  res.sendFile(path.join(__dirname,'client','dist','index.html'))
+})
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
