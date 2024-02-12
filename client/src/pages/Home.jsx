@@ -50,7 +50,6 @@ export default function About() {
   useEffect(() => {
     setLoad(true);
   }, []);
-  console.log(load)
 
   return (
     <main className="min-w-full min-h-full  bg-indigo-200 ">

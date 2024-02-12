@@ -18,6 +18,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { RxCross1 } from "react-icons/rx";
 import ListingModal from "../components/ListingModal.jsx";
+import Cookies from 'universal-cookie';
 
 
 
@@ -33,6 +34,12 @@ export default function Profile() {
   const [showListing,setShowListing]=useState(false);
   const dispatch = useDispatch();
   const [error,setError]=useState(null);
+  const cookie=new Cookies(null,{path:'/'});
+
+  
+
+
+
 
   useEffect(()=>{
     // setUser(currentUser);
@@ -40,10 +47,15 @@ export default function Profile() {
     setError(null)
   },[edit]);
 
+
   useEffect(()=>{
     const handleListings = async () => {
         try {
           setError(null)
+         if(cookie.get('access_token')==undefined){
+          setError('Expiries Youe Session');
+          dispatch(signOutUserSuccess())
+         }
           const res = await fetch(`/api/user/listings/${currentUser._id}`);
           const data = await res.json();
           setUserListing(data);

@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 export default function ListingModal({ listings, onClose,show }) {
   const modalRef = useRef(null);
-  const [userlisting, setUserListing] = useState(listings);
+  const [userlisting, setUserListing] = useState(listings||{});
   show
   const handleDeleteListing = async (id) => {
     try {
@@ -34,7 +34,7 @@ export default function ListingModal({ listings, onClose,show }) {
     // Prevent closing when clicking inside the modal content
     event.stopPropagation();
   };
-  console.log(userlisting)
+  // console.log(userlisting)
 
   return (
     <main className={`inset-0 fixed bg-black bg-opacity-0  flex justify-end z-10 transition-transform ease-in-out duration-1000 ${show?'-translate-x-0 ':'translate-x-full '}`} onClick={onClose}>

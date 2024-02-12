@@ -26,7 +26,7 @@ export default function Header() {
   }, [window.location.search]);
   return (
     <header className="bg-slate-400 shadow-inner  shadow-gray-950">
-      <div className="flex justify-around items-center max-w-7xlxxl mx-auto p-3">
+      <div className="flex justify-around items-center max-w-7xl mx-auto p-3 flex-col md:flex-row">
         <Link to="/">
           <h1 className="font-bold text-sm sm:text-xl flex flex-wrap">
             <span className="text-gray-200">MERN </span>
@@ -50,12 +50,12 @@ export default function Header() {
         </form>
         <ul className="flex gap-6 items-center">
           <Link to="/">
-            <li className="hidden sm:inline font-medium text-cyan-950 text-base hover:underline ">
+            <li className="font-medium text-cyan-950 text-base hover:underline ">
               Home
             </li>
           </Link>
           <Link to="/about">
-          <li className="hidden sm:inline font-medium text-cyan-950 text-base hover:underline ">
+          <li className="font-medium text-cyan-950 text-base hover:underline ">
               About
             </li>
           </Link>
@@ -67,15 +67,15 @@ export default function Header() {
                 src={currentUser.avatar}
                 alt="profile"
               />
-            ):(<div>
+            ):(<div className="flex gap-2">
               <Link to={"/sign-in"}>
-                <li className="hidden sm:inline text-slate-700 hover:underline">
+                <li className=" text-cyan-950 text-base font-medium hover:underline">
                   Login
                 </li>
               </Link>
               <span> / </span>
               <Link to={"/sign-up"}>
-                <li className="hidden sm:inline text-slate-700 hover:underline">
+                <li className=" text-cyan-950 text-base font-medium hover:underline">
                   SignUp
                 </li>
               </Link>
