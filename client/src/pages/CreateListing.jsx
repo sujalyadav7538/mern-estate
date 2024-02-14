@@ -79,8 +79,8 @@ export default function CreateListing() {
       setError('Images must be less than 6!!');
     }
   };
-  console.log(currentFile);
-  console.log(error);
+  // console.log(currentFile);
+  // console.log(error);
   
   
   const uploadFile=async (e)=>{
@@ -93,10 +93,12 @@ export default function CreateListing() {
       for(const key in currentFile){
         formData.append('imageUrls',currentFile[key])
       }
+      console.log('here',currentFile,)
       const res = await fetch('/api/listing/imageurl/upload', {
         method: 'POST',
         body: formData,
       });
+      // console.log("after",error)
       const data= await res.json();
       console.log("Response",data);
       if(data.success==false){
@@ -109,6 +111,7 @@ export default function CreateListing() {
       }));
       console.log(formdata.imageUrls)
     } catch (error) {
+      console.log("here i am giving ypu the error",error.message)
       setError(error.message);
     } finally{      
       setuploadLoding(false);

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home.jsx";
@@ -15,11 +16,23 @@ import Search from './pages/Search';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { signOutUserSuccess } from "./redux/user/userSlice.js";
+import { useEffect } from "react";
 
 
 export default function App() {
   const {currentuser}=useSelector((state)=>state.user);
   const dispatch=useDispatch();
+  useEffect(()=>{
+    const checkToken=async()=>{
+      const res=await fetch('/api/user/test');
+      const data=await res.json();
+      if(data=="" || data.success==false){
+        return dispatch(signOutUserSuccess());
+      }
+    }
+    checkToken();
+   
+  },[])
   setInterval(async() => {
     const res=await fetch('/api/user/test');
     const data=await res.json();
@@ -27,7 +40,7 @@ export default function App() {
       return dispatch(signOutUserSuccess());
     }
 
-  },60*30*1000);
+  },60*10*1000);
   return (
     <BrowserRouter>
       <Header />

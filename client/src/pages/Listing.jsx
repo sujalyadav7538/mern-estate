@@ -63,8 +63,8 @@ export default function Listing() {
       )}
 
       {listing && !loading && !error && listing.imageUrls && (
-        <div className=" flex flex-col lg:flex-row gap-2 ">
-          <div className=" h-2/4 w-3/4 lg:h-[500px] lg:w-[700px] ">
+        <div className=" flex flex-col lg:flex-row gap-2 flex-1">
+          <div className=" h-2/4 w-3/4 lg:h-[500px] lg:max-w-3xl ">
           <img src={listing.imageUrls[0]} alt="" className="w-full h-full object-cover rounded-xl"  />
           {showImages&&(<ImageModal urls={listing.imageUrls}/>)}
           </div>
@@ -101,7 +101,7 @@ export default function Listing() {
               <GiCrossedBones onClick={()=>(setShowImages(false))}/>
               </div>
           }
-          <div className="flex flex-col m-4  gap-4">
+          <div className="flex flex-col m-4  gap-4 max-w-2xl">
             <p className="text-2xl font-semibold">
               {listing.name} - $ {currentPrice}
               {listing.type === "rent" && " / month"}
