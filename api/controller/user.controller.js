@@ -1,12 +1,19 @@
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
 import User from '../models/user.model.js';
-import { uploadOnCloud } from "../utils/cloudinary.js";
 import Listing from './../models/listing.model.js';
 
 
 export const test =(req,res)=>{
-    res.send("HELLOO WORKING ON IT")
+    try{
+        if (req.cookies.access_token==undefined){
+            return res.json("");
+        }
+        res.json(req.cookies.access_token)
+
+    } catch(err){
+        next(err);
+    }
 };
 
 export const updateUser= async (req,res,next)=>{

@@ -64,7 +64,7 @@ export default function Listing() {
 
       {listing && !loading && !error && listing.imageUrls && (
         <div className=" flex flex-col lg:flex-row gap-2 ">
-          <div className="h-[500px] w-[700px] ">
+          <div className=" h-2/4 w-3/4 lg:h-[500px] lg:w-[700px] ">
           <img src={listing.imageUrls[0]} alt="" className="w-full h-full object-cover rounded-xl"  />
           {showImages&&(<ImageModal urls={listing.imageUrls}/>)}
           </div>

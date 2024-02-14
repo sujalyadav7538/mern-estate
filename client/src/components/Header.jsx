@@ -26,7 +26,7 @@ export default function Header() {
   }, [window.location.search]);
   return (
     <header className="bg-slate-400 shadow-inner  shadow-gray-950">
-      <div className="flex justify-around items-center max-w-7xl mx-auto p-3 flex-col md:flex-row">
+      <div className="flex justify-around items-center max-w-7xl mx-auto p-3 ">
         <Link to="/">
           <h1 className="font-bold text-sm sm:text-xl flex flex-wrap">
             <span className="text-gray-200">MERN </span>

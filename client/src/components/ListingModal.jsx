@@ -37,8 +37,8 @@ export default function ListingModal({ listings, onClose,show }) {
   // console.log(userlisting)
 
   return (
-    <main className={`inset-0 fixed bg-black bg-opacity-0  flex justify-end z-10 transition-transform ease-in-out duration-1000 ${show?'-translate-x-0 ':'translate-x-full '}`} onClick={onClose}>
-      <section ref={modalRef} className={`max-w-lg lg:w-1/4 h-full  rounded-md transition-all ease-in-out duration-1000  ${show?'-translate-x-0 ':'translate-x-full '}`} onClick={handleModalClick} >
+    <main className={`inset-0 fixed bg-black bg-opacity-25 lg:bg-opacity-0  flex justify-end z-10 transition-transform ease-in-out duration-1000 ${show?'-translate-x-0 ':'translate-x-full '}`} onClick={onClose}>
+      <section ref={modalRef} className={`w-[77%] lg:max-w-lg lg:w-1/4 h-full  rounded-md transition-all ease-in-out duration-1000  ${show?'-translate-x-0 ':'translate-x-full '}`} onClick={handleModalClick} >
         <header className="font-semibold p-4 uppercase border border-b-gray-600 bg-gray-600 text-white rounded-md ">Listings:</header>
         <div className="overflow-hidden h-full bg-opacity-25">
           {userlisting&&userlisting.map((listing, index) => (

@@ -55,7 +55,7 @@ export default function About() {
     <main className="min-w-full min-h-full  bg-indigo-200 ">
       <section className="h-[550px] md:h-[70vh] lg:h-[80vh]relative  p-2  ">
         <div
-          className="w-full h-full object-cover relative rounded-full shadow-2xl shadow-purple-950/80 transition-transform "
+          className=" h-3/4 lg:h-full object-cover relative rounded-e-2xl lg:rounded-full shadow-2xl shadow-purple-950/80 transition-transform "
           style={{
             backgroundImage:
             `url(${image6})`,

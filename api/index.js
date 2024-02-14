@@ -71,6 +71,7 @@ app.use("/api/user", userRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/listing", listingRoute);
 
+
 app.use(express.static(path.join(__dirname,'/client/dist')));
 
 app.get('*',(req,res)=>{

@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-// import React from 'react'
-import Cookies from 'universal-cookie';
 export default function About() {
-  const cookie= new Cookies(null,{path:'/'});
-   console.log(cookie.get('access_token'))
+  const checkPrompt=(e)=>{
+      return (confirm('Do youb want to delete your account!'))
+  }
+  
   return (
-    <div>About</div>
+    <div className="min-w-screen min-h-screen flex justify-center items-center"><button className=" bg-red-800 m-4 p-8  " onClick={checkPrompt}>Delete</button></div>
   )
 }

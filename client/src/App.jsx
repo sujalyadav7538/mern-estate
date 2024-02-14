@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
@@ -11,9 +12,22 @@ import CreateListing from "./pages/CreateListing.jsx";
 import UpdateListing from "./pages/UpdateListing.jsx";
 import Listing from "./pages/Listing.jsx";
 import Search from './pages/Search';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { signOutUserSuccess } from "./redux/user/userSlice.js";
 
 
 export default function App() {
+  const {currentuser}=useSelector((state)=>state.user);
+  const dispatch=useDispatch();
+  setInterval(async() => {
+    const res=await fetch('/api/user/test');
+    const data=await res.json();
+    if(data=="" || data.success==false){
+      return dispatch(signOutUserSuccess());
+    }
+
+  },60*30*1000);
   return (
     <BrowserRouter>
       <Header />
