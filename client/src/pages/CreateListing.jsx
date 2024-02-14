@@ -79,7 +79,8 @@ export default function CreateListing() {
       setError('Images must be less than 6!!');
     }
   };
-  // console.log(currentFile);
+  console.log(currentFile);
+  console.log(error);
   
   
   const uploadFile=async (e)=>{
@@ -98,6 +99,10 @@ export default function CreateListing() {
       });
       const data= await res.json();
       console.log("Response",data);
+      if(data.success==false){
+        setError("Uploading Server ERROR");
+        return
+      }
       setFormData((prev) => ({
         ...prev,
         imageUrls:data
@@ -122,7 +127,7 @@ export default function CreateListing() {
         setError('Discount must be less than RegularPrice!!');
         return
       }
-      if(formdata.imageUrls<=0) return setError("No Image Uploaded, Upload atleast 1 image!!")
+      if(formdata.imageUrls==0) return setError("No Image Uploaded, Upload atleast 1 image!!")
 
       setFormData((prev)=>({
         ...prev,
