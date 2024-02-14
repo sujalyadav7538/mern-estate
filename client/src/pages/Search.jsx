@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
 import Footer from "../components/footer";
 import { BsFillFilterSquareFill } from "react-icons/bs";
-import { RiContractLeftFill } from "react-icons/ri";
+import { RiContractLeftFill } from "react-icons/ri"
 
 export default function Search() {
   const navigate = useNavigate();
