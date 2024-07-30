@@ -87,6 +87,7 @@ export default function CreateListing() {
     // console.log(formdata.imageUrls);
     // e.preventDefault();
     try {
+      setError(null)
       if (currentFile.length<=0) return setError("NO IMAGE IS SELECTED!!") 
       setuploadLoding(true)
       const formData=new FormData();
