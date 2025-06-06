@@ -31,20 +31,21 @@ Estate Manager provides an intuitive platform for users to search, filter, and e
 
 ## 📂 Project Glimpses
 
-### 1. **Property Listings**
-![Property Listings](https://github.com/your-username/estate-manager/blob/main/public/screenshots/property-listings.png)
+### 1. **Home Page**
+![Property Listings](https://github.com/sujalyadav7538/mern-estate/blob/master/public/Capture%201.JPG)
 
-### 2. **User Login**
+### 2. **Property Listings**
+![Property Listings](https://github.com/sujalyadav7538/mern-estate/blob/master/public/Capture%202.JPG)
+
+### 3. **User Login**
 ![User Login](https://github.com/your-username/estate-manager/blob/main/public/screenshots/login.png)
 
-### 3. **Admin Dashboard**
-![Admin Dashboard](https://github.com/your-username/estate-manager/blob/main/public/screenshots/admin-dashboard.png)
-
 ### 4. **Property Details**
-![Property Details](https://github.com/your-username/estate-manager/blob/main/public/screenshots/property-details.png)
+![Admin Dashboard](https://github.com/sujalyadav7538/mern-estate/blob/master/public/Capture%203.JPG)
 
-### 5. **Image Upload**
-![Image Upload](https://github.com/your-username/estate-manager/blob/main/public/screenshots/image-upload.png)
+
+### 5. **Property Image**
+![Image Upload](https://github.com/sujalyadav7538/mern-estate/blob/master/public/Capture%204.JPG)
 
 ---
 
