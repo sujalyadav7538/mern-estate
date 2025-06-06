@@ -14,7 +14,7 @@ import path from "path";
 dotenv.config({ path: "./.env" });
 const app = express();
 mongoose
-  .connect(process.env.MONGO)
+  .connect('mongodb+srv://sujalyadav7538:MERNESTATE@cluster0.wd7ovso.mongodb.net/mern-estate?retryWrites=true&w=majority')
   .then(() => {
     console.log("Database connected");
   })
@@ -45,15 +45,15 @@ app.post(
   async (req, res, next) => {
     try {
       const { avatar, imageUrls } = req.files;
+      console.log(imageUrls)
       const localfilepaths = [];
-      // console.log(req.files)
       if (avatar) {
         for (let i = 0; i < avatar.length; i++) {
-          // localfilepaths.push(avatar[i].path)
           localfilepaths.push((await uploadOnCloud(avatar[i].path)).url);
         }
       }
       if (imageUrls) {
+        console.log('Uploading Images!!')
         for (let i = 0; i < imageUrls.length; i++) {
           localfilepaths.push((await uploadOnCloud(imageUrls[i].path)).url);
         }
@@ -75,6 +75,7 @@ app.use("/api/listing", listingRoute);
 app.use(express.static(path.join(__dirname,'/client/dist')));
 
 app.get('*',(req,res)=>{
+  console.log(path.join(__dirname,'client','dist','index.html'))
   res.sendFile(path.join(__dirname,'client','dist','index.html'))
 })
 

@@ -6,7 +6,7 @@ export const geoCode=async(address)=>{
           const response = await fetch(
             `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
               address
-            )}&apiKey=${process.env.GEO_API_KEY}`,
+            )}&apiKey=72bee9f218654ad6a595ec9dc8bf3b7b`,
             requestOptions
           );
           const data = await response.json();

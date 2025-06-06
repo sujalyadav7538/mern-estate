@@ -11,7 +11,7 @@ export const createListing = async (req, res, next) => {
     if (req.body.imageUrls.length > 6)
       return next(errorHandler(401, "Images Should Not be more than 6"));
     const coordinates= await geoCode(req.body.address);
-    
+    console.log(coordinates)    
     req.body.latitude=coordinates[0];
     req.body.longitude=coordinates[1];
     const listing = await Listing.create(req.body);

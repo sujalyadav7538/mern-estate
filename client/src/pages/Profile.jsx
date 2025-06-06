@@ -40,7 +40,6 @@ export default function Profile() {
     const handleListings = async () => {
       try {
         setError(null);
-  
         const res = await fetch(`/api/user/listings/${currentUser._id}`);
         const data = await res.json();
         setUserListing(data);
